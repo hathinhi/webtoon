@@ -1,0 +1,57 @@
+<script src="http://cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.1/processing-api.min.js"></script><html>
+<body>
+<canvas id="the-canvas1" style="border:1px solid black"></canvas><br>
+<canvas id="the-canvas" style="border:1px solid black"></canvas>
+<input id='pdf' type='file'/>
+<script type="text/javascript" src="https://rawgithub.com/mozilla/pdf.js/gh-pages/build/pdf.js"></script>
+
+<script type="text/javascript">
+    PDFJS.disableWorker = true;
+    var pdf = document.getElementById('pdf');
+    pdf.onchange = function(ev) {
+        console.log(document.getElementById('pdf').files[0]);return;
+        if (file = document.getElementById('pdf').files[0]) {
+            fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                PDFJS.getDocument(fileReader.result).then(function getPdfHelloWorld(pdf) {
+                    console.log(pdf.pdfInfo.numPages)
+                    pdf.getPage(1).then(function getPageHelloWorld(page) {
+                        var scale = 1;
+                        var viewport = page.getViewport(scale);
+                        var canvas = document.getElementById('the-canvas1');
+                        var context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        var task = page.render({canvasContext: context, viewport: viewport})
+                        task.promise.then(function(){
+                            console.log(canvas.toDataURL('image/jpeg'));
+                        });
+                    });
+                    pdf.getPage(2).then(function getPageHelloWorld(page) {
+                        var scale = 1;
+                        var viewport = page.getViewport(scale);
+                        var canvas = document.getElementById('the-canvas');
+                        var context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        var task = page.render({canvasContext: context, viewport: viewport})
+                        task.promise.then(function(){
+                            console.log(canvas.toDataURL('image/jpeg'));
+                        });
+                    });
+                }, function(error){
+                    console.log(error);
+                });
+            };
+            fileReader.readAsArrayBuffer(file);
+        }
+    }
+</script>
+
+
+<style id="jsbin-css">
+</style>
+<script>
+</script>
+</body>
+</html>
